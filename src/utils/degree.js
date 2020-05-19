@@ -20,8 +20,26 @@ const getBoundDegree = (degree) => {
     if (degree < 0) return getBoundDegree(degree + 360);
 };
 
+const convertDMSToSec = (DMS) => {
+    DMS = getValidatedDMS(DMS);
+
+    return (DMS[0] * 3600 + DMS[1] * 60 + DMS[2]);
+};
+
+const convertDegreeToDMS = (degree) => {
+    degree = getValidatedDegree(degree);
+
+    let D = parseInt(degree);
+    let M = ((degree - D) * 60).toFixed(5);
+    let S = parseInt((M - parseInt(M)) * 60);
+
+    return [D, parseInt(M), S];
+};
+
 module.exports = {
     getValidatedDegree,
     getValidatedDMS,
-    getBoundDegree
+    getBoundDegree,
+    convertDMSToSec,
+    convertDegreeToDMS
 }

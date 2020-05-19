@@ -1,4 +1,4 @@
-const {getValidatedDegree, getValidatedDMS, getBoundDegree} = require('./../degree');
+const {getValidatedDegree, getValidatedDMS, getBoundDegree, convertDMSToSec, convertDegreeToDMS} = require('./../degree');
 
 
 
@@ -69,6 +69,29 @@ describe('DEGREE UTILS', () => {
 
         it('return the correct degree if the degree is less than 0', () => {
             expect(getBoundDegree(-5)).toBe(355);
+        })
+    });
+
+    describe('covertDMSToSec', () => {
+
+        it('returns the correct output in seconds if DMS is given', () => {
+            let DMS = [5, 50, 5];
+
+            let seconds = 5 * 3600 + 50 * 60 + 5;
+
+            expect(convertDMSToSec(DMS)).toBe(seconds);
+        });
+    });
+
+    describe('convertDegreeToDMS', () => {
+
+        it('returns the correct output of DMS from given degree', () => {
+
+            expect(convertDegreeToDMS(155.8)).toEqual([155, 48, 0]);
+            expect(convertDegreeToDMS(155.85)).toEqual([155, 51, 0]);
+            expect(convertDegreeToDMS(155.85155)).toEqual([155, 51, 5]);
+            expect(convertDegreeToDMS(0)).toEqual([0, 0, 0]);
+            expect(convertDegreeToDMS(140)).toEqual([140, 0, 0]);
         })
     })
 })
