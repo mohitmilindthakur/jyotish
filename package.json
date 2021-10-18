@@ -2,7 +2,7 @@
   "name": "jyotish",
   "version": "1.0.1",
   "description": "The Jyotish module has calculations related to Vedic Astrology",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "test:unit": "jest --watch"
   },
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/mohitmilindthakur/jyotish#readme",
   "dependencies": {
-    "swisseph": "^0.5.13"
+    "swisseph": "^0.5.16"
   },
   "devDependencies": {
     "jest": "^26.0.1"
