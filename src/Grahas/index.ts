@@ -104,17 +104,8 @@ export class Grahas {
       }
     });
   }
-}
 
-let bd: BirthDetails = {
-  year: 2020,
-  month: 7,
-  date: 25,
-  hour: 5,
-  min: 55,
-  sec: 55,
-  timezone: 5.5,
-  lat: 50,
-  lng: 50,
-};
-let grahas = new Grahas(bd);
+  getAllGrahaPositions(): Graha[] {
+    return this.grahas;
+  }
+}
