@@ -28,15 +28,28 @@ var SE_GRAHAS_1 = __importDefault(require("./SE_GRAHAS"));
 var swisseph = __importStar(require("swisseph"));
 var Nakshatra_1 = require("../Nakshatra");
 var Rashi_1 = require("../Rashi");
+var lodash_1 = __importDefault(require("lodash"));
 var Grahas = /** @class */ (function () {
-    function Grahas(bd) {
+    function Grahas(bd, settings) {
         this.bd = bd;
-        swisseph.swe_set_sid_mode(1, 0, 0);
+        if (!settings) {
+            settings = {
+                zodiacType: 'S',
+                ayanamsha: 1,
+                houseType: 'E',
+            };
+        }
+        var z = settings.zodiacType || 'S';
+        var ay = settings.ayanamsha || 1;
+        var h = settings.houseType || 'E';
+        if (z === 'S') {
+            swisseph.swe_set_sid_mode(ay, 0, 0);
+        }
         this.LaDegree = 0;
         this.jd_et = 0;
         this.grahas = [];
         this.calculateJdEt();
-        this.calculateLagna(bd.lat, bd.lng, 'E');
+        this.calculateLagna(bd.lat, bd.lng, h);
         this.calculateGrahaPositions();
     }
     // A METHOD TO CALCULATE JULIAN DAY IN ET
@@ -80,14 +93,31 @@ var Grahas = /** @class */ (function () {
                 var bhava = _this.getBhavaOfGraha(g.longitude);
                 var nakshatra = new Nakshatra_1.Nakshatra(g.longitude).getNakshatra();
                 var rashi = new Rashi_1.Rashi(g.longitude).getRashi();
-                var isRetrograde = g.longitudeSpeed > 0 ? true : false;
+                var isRetrograde = g.longitudeSpeed < 0 ? true : false;
                 var grahaObj = new Graha_1.Graha(g.latitude, g.longitude, bhava, nakshatra, rashi, isRetrograde, graha, SE_GRAHAS_1.default[graha]);
                 _this.grahas.push(grahaObj);
             }
         });
     };
     Grahas.prototype.getAllGrahaPositions = function () {
-        return this.grahas;
+        var grahasObj = {};
+        this.grahas.forEach(function (g) {
+            grahasObj[g.graha] = g;
+        });
+        return grahasObj;
+    };
+    Grahas.prototype.getBhavas = function () {
+        var bhavas = [];
+        var grahasByBhava = lodash_1.default.groupBy(this.grahas, 'bhava');
+        for (var i = 1; i <= 12; i++) {
+            if (grahasByBhava.hasOwnProperty(String(i))) {
+                bhavas.push(grahasByBhava[String(i)]);
+            }
+            else {
+                bhavas.push([]);
+            }
+        }
+        return bhavas;
     };
     return Grahas;
 }());

@@ -4,6 +4,8 @@ import * as swisseph from 'swisseph';
 import { BirthDetails } from '../types/BirthDetails';
 import { Nakshatra } from '../Nakshatra';
 import { Rashi } from '../Rashi';
+import { TBhavas, TKundaliSettings } from '../types/global';
+import _ from 'lodash';
 
 export class Grahas {
   grahas: Graha[];
@@ -12,13 +14,27 @@ export class Grahas {
   // JULIAN DAY IN ET
   jd_et: number;
 
-  constructor(public bd: BirthDetails) {
-    swisseph.swe_set_sid_mode(1, 0, 0);
+  constructor(public bd: BirthDetails, settings?: TKundaliSettings) {
+    if (!settings) {
+      settings = {
+        zodiacType: 'S',
+        ayanamsha: 1,
+        houseType: 'E',
+      };
+    }
+
+    let z = settings.zodiacType || 'S';
+    let ay = settings.ayanamsha || 1;
+    let h = settings.houseType || 'E';
+
+    if (z === 'S') {
+      swisseph.swe_set_sid_mode(ay, 0, 0);
+    }
     this.LaDegree = 0;
     this.jd_et = 0;
     this.grahas = [];
     this.calculateJdEt();
-    this.calculateLagna(bd.lat, bd.lng, 'E');
+    this.calculateLagna(bd.lat, bd.lng, h);
     this.calculateGrahaPositions();
   }
 
@@ -88,7 +104,7 @@ export class Grahas {
         let bhava = this.getBhavaOfGraha(g.longitude);
         let nakshatra = new Nakshatra(g.longitude).getNakshatra();
         let rashi = new Rashi(g.longitude).getRashi();
-        let isRetrograde = g.longitudeSpeed > 0 ? true : false;
+        let isRetrograde = g.longitudeSpeed < 0 ? true : false;
 
         let grahaObj = new Graha(
           g.latitude,
@@ -105,7 +121,24 @@ export class Grahas {
     });
   }
 
-  getAllGrahaPositions(): Graha[] {
-    return this.grahas;
+  getAllGrahaPositions(): { [key: string]: Graha } {
+    let grahasObj: { [key: string]: Graha } = {};
+    this.grahas.forEach((g) => {
+      grahasObj[g.graha] = g;
+    });
+    return grahasObj;
+  }
+
+  getBhavas(): TBhavas {
+    let bhavas: TBhavas = [];
+    let grahasByBhava = _.groupBy(this.grahas, 'bhava');
+    for (let i = 1; i <= 12; i++) {
+      if (grahasByBhava.hasOwnProperty(String(i))) {
+        bhavas.push(grahasByBhava[String(i)]);
+      } else {
+        bhavas.push([]);
+      }
+    }
+    return bhavas;
   }
 }

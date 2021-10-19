@@ -13,4 +13,5 @@ var bd = {
     lng: 50,
 };
 var kundali = new index_1.Kundali(bd);
-console.log(kundali.grahas.getAllGrahaPositions());
+// console.log(kundali.grahas.getAllGrahaPositions());
+console.log(kundali.grahas.getBhavas());
